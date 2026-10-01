@@ -148,6 +148,49 @@ nav{position:sticky;top:0;z-index:100;height:54px;padding:0 max(20px,5vw);
 /* FOOTER */
 footer{border-top:1px solid var(--line);padding:24px max(20px,5vw);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:.76rem;color:var(--t3);}
 
+/* MIS PRECIOS */
+.pre-tabs { display:flex; gap:6px; padding:10px 16px; border-bottom:1px solid var(--line); overflow-x:auto; flex-shrink:0; }
+.pre-tab { flex:1; white-space:nowrap; padding:10px 12px; border-radius:10px; border:1px solid var(--line2); background:transparent; color:var(--t2); font:inherit; font-size:.85rem; font-weight:600; cursor:pointer; }
+.pre-tab.on { background:var(--a); color:#1a1408; border-color:var(--a); }
+.pre-body { flex:1; overflow-y:auto; padding:16px; max-width:760px; width:100%; margin:0 auto; -webkit-overflow-scrolling:touch; }
+.pre-h3 { font-size:1rem; margin:18px 0 6px; }
+.pre-alert { background:var(--adim); border:1px solid var(--aline); color:var(--a); border-radius:10px; padding:10px 12px; font-size:.84rem; margin:10px 0; }
+.pre-list { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+.pre-ins { background:var(--s1); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
+.pre-ins.falta { border-color:var(--aline); }
+.pi-name { width:100%; padding:8px 10px; border-radius:8px; border:1px solid var(--line2); background:transparent; color:var(--t1); font:inherit; font-size:.9rem; font-weight:600; }
+.pi-line { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:8px; font-size:.84rem; color:var(--t2); }
+.pi-line .pi-name { flex:1; min-width:150px; margin:0; }
+.pi-num { width:86px; padding:8px; border-radius:8px; border:1px solid var(--line2); background:transparent; color:var(--t1); font:inherit; font-size:.88rem; text-align:right; }
+.pi-unit { width:auto !important; }
+.pi-cu { font-size:.8rem; color:var(--a); margin-top:6px; font-weight:600; }
+.pre-rec { background:var(--s1); border:1px solid var(--line); border-radius:12px; margin-top:8px; }
+.pre-rec summary { display:flex; align-items:center; gap:8px; padding:12px; cursor:pointer; list-style:none; }
+.pre-rec summary::-webkit-details-marker { display:none; }
+.pr-name { flex:1; font-weight:600; font-size:.9rem; }
+.pr-cost { color:var(--a); font-weight:700; font-size:.88rem; }
+.pr-tag { font-size:.68rem; padding:2px 8px; border-radius:20px; background:var(--adim); color:var(--a); }
+.pr-body { padding:0 12px 12px; }
+.pr-ing { display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:8px 0; border-bottom:1px solid var(--line); }
+.pr-ref { flex:1 1 120px; min-width:0; max-width:100%; }
+.pr-ing .pi-num { width:64px; }
+.pr-ic { min-width:48px !important; }
+.pr-u { font-size:.78rem; color:var(--t3); width:26px; }
+.pr-ic { font-size:.82rem; color:var(--t2); min-width:58px; text-align:right; }
+.pr-nota { width:100%; font-size:.72rem; color:var(--t3); }
+.pr-tot { margin-top:10px; font-size:.85rem; color:var(--t2); }
+.mix-grupo { font-size:.75rem; letter-spacing:.06em; text-transform:uppercase; color:var(--t3); margin:16px 0 6px; font-weight:700; }
+.mix-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); }
+.mix-row.off { opacity:.55; }
+.mix-name { flex:1; font-size:.9rem; }
+.mix-name small { display:block; font-size:.74rem; color:var(--t3); }
+.mix-row input { width:76px; padding:9px; border-radius:8px; border:1px solid var(--aline); background:transparent; color:var(--t1); font:inherit; text-align:right; }
+.link-btn { background:none; border:none; color:var(--a); font:inherit; font-size:.8rem; text-decoration:underline; cursor:pointer; padding:0; }
+.paq-btn { margin-left:4px; border:1px solid var(--line2); background:transparent; border-radius:6px; padding:3px 5px; font-size:.8rem; cursor:pointer; opacity:.6; }
+.paq-btn.on { opacity:1; border-color:var(--aline); background:var(--adim); }
+.paq-row td { background:var(--adim); padding:8px 10px !important; }
+.hdr .neg-nav-btn { padding:8px 12px; }
+@media (max-width:480px){ .hdr .neg-nav-btn { font-size:.7rem; padding:7px 10px; } }
 /* MIS SERVICIOS Y GASTOS */
 .srv-card { position:relative; }
 .srv-del { position:absolute; top:4px; right:4px; width:24px; height:24px; border-radius:50%; border:none; background:rgba(255,255,255,.08); color:var(--t2); font-size:.75rem; cursor:pointer; line-height:24px; padding:0; }
@@ -1198,9 +1241,12 @@ input[type=range]::-webkit-slider-thumb {
     <div class="mark">E</div>
     Event<span class="e">Calc</span>
   </div>
-  <button class="neg-nav-btn" onclick="openNegocio()" aria-label="Abrir módulo Mi Negocio">
-    📊 Mi Negocio
-  </button>
+  <div style="display:flex;gap:8px;">
+    <button class="neg-nav-btn" onclick="openPrecios()" aria-label="Abrir Mis precios">🏷️ Mis precios</button>
+    <button class="neg-nav-btn" onclick="openNegocio()" aria-label="Abrir módulo Mi Negocio">
+      📊 Mi Negocio
+    </button>
+  </div>
 </header>
 
 <div class="app">
@@ -1327,6 +1373,9 @@ input[type=range]::-webkit-slider-thumb {
       <button class="add-row-btn" onclick="addP2Ing()">＋ Agregar ingrediente</button>
       <div id="restore-wrap"></div>
     </div>
+
+    <!-- Barra de café: cuántas bebidas -->
+    <div class="section" id="barra-box" style="display:none"></div>
 
     <!-- Cálculo por litros (solo bebidas como cantaritos) -->
     <div class="section" id="litros-box" style="display:none"></div>
@@ -1616,6 +1665,20 @@ input[type=range]::-webkit-slider-thumb {
 <!-- ══════════════════════════════════════════════
      MI NEGOCIO — EventCalc OS
 ══════════════════════════════════════════════════ -->
+<div class="neg-overlay" id="pre-overlay">
+  <div class="neg-hdr">
+    <button class="neg-back" onclick="closePrecios()">← Cotizador</button>
+    <span class="neg-hdr-title">🏷️ Mis precios</span>
+    <span class="save-note on" style="opacity:.8">Se guarda solo</span>
+  </div>
+  <div class="pre-tabs">
+    <button class="pre-tab on" data-t="insumos" onclick="preTab('insumos')">🛒 Insumos</button>
+    <button class="pre-tab" data-t="recetas" onclick="preTab('recetas')">🧪 Recetas base</button>
+    <button class="pre-tab" data-t="bebidas" onclick="preTab('bebidas')">☕ Bebidas</button>
+  </div>
+  <div class="pre-body" id="pre-body"></div>
+</div>
+
 <div class="neg-overlay" id="neg-overlay">
 
   <!-- Header -->
@@ -2056,7 +2119,7 @@ const KEY_DRAFTS  = 'ec-borradores';      // cambios guardados por servicio
 function lsGet(k, def) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch { return def; } }
 function lsSet(k, v)   { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } }
 function misServicios() { return lsGet(KEY_MIS_SRV, []); }
-function allServices()  { return CATALOG.concat(misServicios()); }
+function allServices()  { return CATALOG.concat(serviciosBarra(), misServicios()); }
 const limpiaIngs = ings => ings.map(({ id, ...rest }) => rest);
 
 let _saveT;
@@ -2066,7 +2129,7 @@ function guardarBorrador() {
   _saveT = setTimeout(() => {
     const ings = limpiaIngs(S.editIngs);
     const conf = { personas:S.personas, margen:S.margen, modo:S.modo, litros:S.litros,
-                   precioFijo:S.precioFijo, gastosEv:S.gastosEv };
+                   precioFijo:S.precioFijo, gastosEv:S.gastosEv, mix:S.mix };
     if (S.service.custom) {
       const list = misServicios();
       const k = list.findIndex(s => s.id === S.service.id);
@@ -2115,7 +2178,7 @@ function renderCatalog() {
       ${s.custom ? `<button class="srv-del" onclick="borrarServicio(event,'${s.id}')" aria-label="Borrar servicio">✕</button>` : ''}
       <div class="icon">${s.icon || '⭐'}</div>
       <div class="name">${esc(s.name)}</div>
-      <div class="tag">${s.ings.length} ingredientes</div>
+      <div class="tag">${s.barra ? s.nBebidas + ' bebidas' : s.ings.length + ' ingredientes'}</div>
       ${s.custom ? '<div class="mine">MÍO</div>' : ''}
     </div>`).join('');
   if (S.service) {
@@ -2136,6 +2199,7 @@ function selectSrv(id) {
   S.modo       = cf.modo       || 'personas';
   S.litros     = cf.litros     || 10;
   S.precioFijo = cf.precioFijo || 0;
+  S.mix        = { ...(cf.mix || {}) };
   S.gastosEv   = (cf.gastosEv  || []).map(g => ({ ...g, id: Date.now() + Math.random() }));
   document.querySelectorAll('.srv-card').forEach(c => {
     c.classList.remove('sel'); c.setAttribute('aria-checked','false');
@@ -2171,6 +2235,7 @@ function removeCustomIng(id) {
 function setCustomIng(id, field, val) {
   const ing = S.customIngs.find(i => i.id === id);
   if (ing) ing[field] = (['qty','costo'].includes(field)) ? +val || 0 : val;
+  if (ing && field === 'qty') aplicarPaq(ing);
 }
 function renderCustomIngs() {
   document.getElementById('c-ing-body').innerHTML = S.customIngs.map(ing => ingRow(ing, 'removeCustomIng', 'setCustomIng')).join('');
@@ -2220,7 +2285,7 @@ function ingRow(ing, removeFn, setFn) {
       oninput="${setFn}(${ing.id},'qty',this.value);liveP2()" aria-label="Cantidad"></td>
     <td class="tc-unit">${unitSelect(ing, setFn)}</td>
     <td class="tc-cost"><input type="number" class="tc-cost" placeholder="0" value="${ing.costo}" min="0" inputmode="decimal"
-      oninput="${setFn}(${ing.id},'costo',this.value);liveP2()" aria-label="Costo en pesos"></td>
+      oninput="${setFn}(${ing.id},'costo',this.value);liveP2()" aria-label="Costo en pesos"><button type="button" class="paq-btn${ing.paq ? ' on' : ''}" onclick="togglePaq(${ing.id})" aria-label="Calcular costo con el precio del paquete" title="Calcular con el precio del paquete">🏷️</button></td>
     <td class="tc-act"><button class="rm-row" onclick="${removeFn}(${ing.id})" aria-label="Eliminar ingrediente">✕</button></td>
   </tr>`;
 }
@@ -2251,6 +2316,7 @@ function setP2Ing(id, field, val) {
   const ing = S.editIngs.find(i => i.id === id);
   if (ing) ing[field] = (['qty','costo'].includes(field)) ? +val || 0 : val;
   if (ing && field === 'qty') delete ing.mlPor10L;
+  if (ing && ['qty','unit'].includes(field)) aplicarPaq(ing);
   guardarBorrador();
 }
 
@@ -2294,7 +2360,7 @@ function fillP2() {
       <span style="font-size:1.8rem;">${s.icon}</span>
       <div>
         <div style="font-weight:700;">${s.name}</div>
-        <div style="font-size:.78rem;color:var(--t3);">${s.ings.length} ingredientes precargados</div>
+        <div style="font-size:.78rem;color:var(--t3);">${s.barra ? s.nBebidas + ' bebidas en tu menú' : s.ings.length + ' ingredientes precargados'}</div>
       </div>
     </div>
     <button class="btn btn-ghost" style="flex-shrink:0;padding:8px 16px;font-size:.78rem;" onclick="goTo(1)">Cambiar</button>`;
@@ -2302,6 +2368,7 @@ function fillP2() {
   // Clonar ings para edición
   S.editIngs = s.ings.map(i => ({...i, id: Date.now() + Math.random()}));
   document.getElementById('p2-ing-body').innerHTML = S.editIngs.map(i => ingRow(i,'removeP2Ing','setP2Ing')).join('');
+  if (s.barra) S.editIngs = barraIngs(S.personas);
 
   // Restaurar valores
   document.getElementById('f-personas').value = S.personas;
@@ -2311,6 +2378,7 @@ function fillP2() {
   document.getElementById('margen-lbl').textContent  = S.margen + '%';
   document.getElementById('margen-disp').textContent = S.margen + '%';
   renderLitrosBox();
+  renderBarraBox();
   renderGastosEv();
   renderRestore();
   liveP2();
@@ -2385,6 +2453,7 @@ function mlTotalLitros(ing) {
 // Ingredientes "por persona" que usa el motor de cálculo.
 // Por litros: los líquidos (ml) salen de los litros; lo demás (cantarito, hielo, sal…) va por persona.
 function ingsEfectivos(personas) {
+  if (S.service && S.service.barra) return barraIngs(personas);
   if (!(srvTieneLitros() && S.modo === 'litros')) return S.editIngs;
   const p = Math.max(1, +personas || 1);
   return S.editIngs.map(i => {
@@ -2511,11 +2580,437 @@ function prepYCompra(ing, n) {
   return { prep, compra };
 }
 
+/* ════════════════════════════════════════════════════════
+   🏷️ MIS PRECIOS — insumos, recetas base y bebidas
+════════════════════════════════════════════════════════ */
+const KEY_PRECIOS = 'ec-precios';
+const PRE_DEF = {
+  insumos: [
+    { id:'azucar',     name:'Azúcar',                         precio:24,  cant:900,  unit:'g'  },
+    { id:'vainilla59', name:'Extracto de vainilla (jarabes)', precio:59,  cant:120,  unit:'ml' },
+    { id:'vainilla21', name:'Vainilla (chai)',                precio:21,  cant:150,  unit:'ml' },
+    { id:'cocoa',      name:"Cocoa Hershey's",                precio:331, cant:1000, unit:'g'  },
+    { id:'mediacrema', name:'Media crema',                    precio:18,  cant:190,  unit:'g'  },
+    { id:'lechera',    name:'Lechera',                        precio:26,  cant:375,  unit:'g'  },
+    { id:'madrilena',  name:'Jarabe madrileña',               precio:86,  cant:1000, unit:'ml' },
+    { id:'sal',        name:'Sal',                            precio:0,   cant:1,    unit:'pza', libre:true },
+    { id:'agua',       name:'Agua',                           precio:0,   cant:1000, unit:'ml', libre:true },
+    { id:'azmorena',   name:'Azúcar morena',                  precio:48,  cant:2000, unit:'g'  },
+    { id:'tenegro',    name:'Té negro (bolsitas)',            precio:38,  cant:27,   unit:'pza'},
+    { id:'clavo',      name:'Clavo',                          precio:18,  cant:32,   unit:'g'  },
+    { id:'canela',     name:'Canela',                         precio:25,  cant:50,   unit:'g'  },
+    { id:'pimienta',   name:'Pimienta bola',                  precio:20,  cant:60,   unit:'g'  },
+    { id:'jengibre',   name:'Jengibre',                       precio:20,  cant:100,  unit:'g'  },
+    { id:'cardamomo',  name:'Cardamomo',                      precio:110, cant:1000, unit:'g'  },
+    { id:'lechepolvo', name:'Leche en polvo',                 precio:69,  cant:460,  unit:'g'  },
+    { id:'xantana',    name:'Goma xantana',                   precio:85,  cant:100,  unit:'g'  },
+    { id:'sustcrema',  name:'Sustituto de crema',             precio:95,  cant:950,  unit:'g'  },
+    { id:'solub',      name:'Café soluble',                   precio:225, cant:400,  unit:'g'  },
+    { id:'cafegrano',  name:'Café para expreso',              precio:0,   cant:1000, unit:'g'  },
+    { id:'lentera',    name:'Leche entera',                   precio:0,   cant:1000, unit:'ml' },
+    { id:'ldeslac',    name:'Leche deslactosada',             precio:0,   cant:1000, unit:'ml' },
+    { id:'llight',     name:'Leche deslactosada light',       precio:0,   cant:1000, unit:'ml' },
+    { id:'hielo',      name:'Hielo',                          precio:0,   cant:5000, unit:'g'  },
+    { id:'vaso12',     name:'Vaso 12 oz + tapa + popote',     precio:0,   cant:1,    unit:'pza'},
+    { id:'cajeta',     name:'Cajeta',                         precio:0,   cant:1000, unit:'g'  },
+    { id:'mazapan',    name:'Mazapán',                        precio:0,   cant:1,    unit:'pza'},
+    { id:'carlosv',    name:'Chocolate Carlos V',             precio:0,   cant:1,    unit:'pza'},
+    { id:'caramelo',   name:'Salsa de caramelo',              precio:0,   cant:1000, unit:'ml' },
+    { id:'oreo',       name:'Galleta Oreo',                   precio:0,   cant:1,    unit:'pza'},
+  ],
+  recetas: [
+    { id:'jvainilla', tipo:'base', name:'Jarabe de vainilla', rinde:1000, unit:'ml', ings:[
+      { ref:'i:agua', qty:720, nota:'3 tazas' }, { ref:'i:azucar', qty:600, nota:'3 tazas' }, { ref:'i:vainilla59', qty:54 } ]},
+    { id:'smoka', tipo:'base', name:'Salsa de moka', rinde:1000, unit:'ml', ings:[
+      { ref:'i:cocoa', qty:158 }, { ref:'i:vainilla59', qty:60, nota:'4 cucharadas' }, { ref:'i:mediacrema', qty:120 },
+      { ref:'i:lechera', qty:354 }, { ref:'i:madrilena', qty:300 }, { ref:'i:sal', qty:1, nota:'1 pizca' } ]},
+    { id:'chai', tipo:'base', name:'Concentrado de chai', rinde:1000, unit:'ml', ings:[
+      { ref:'i:azmorena', qty:267 }, { ref:'i:tenegro', qty:15 }, { ref:'i:agua', qty:1440, nota:'6 tazas' },
+      { ref:'i:clavo', qty:2.4, nota:'27 piezas (aprox.)' }, { ref:'i:canela', qty:18, nota:'4.5 varas (aprox.)' },
+      { ref:'i:pimienta', qty:1.4, nota:'27 piezas (aprox.)' }, { ref:'i:jengibre', qty:36, nota:'18 piezas (aprox.)' },
+      { ref:'i:cardamomo', qty:3.6, nota:'18 piezas (aprox.)' }, { ref:'i:vainilla21', qty:45, nota:'3 cucharadas' } ]},
+    { id:'pneutra', tipo:'base', name:'Base neutra (polvo)', rinde:669, unit:'g', ings:[
+      { ref:'i:azucar', qty:467 }, { ref:'i:lechepolvo', qty:95 }, { ref:'i:xantana', qty:12 }, { ref:'i:sustcrema', qty:95 } ]},
+    { id:'pchoc', tipo:'base', name:'Base chocolate (polvo)', rinde:642, unit:'g', ings:[
+      { ref:'i:azucar', qty:467 }, { ref:'i:lechepolvo', qty:96 }, { ref:'i:xantana', qty:12 }, { ref:'i:cocoa', qty:67 } ]},
+    { id:'pcap', tipo:'base', name:'Base capuccino (polvo)', rinde:706, unit:'g', ings:[
+      { ref:'i:azucar', qty:467 }, { ref:'i:lechepolvo', qty:96 }, { ref:'i:xantana', qty:12 }, { ref:'i:sustcrema', qty:96 }, { ref:'i:solub', qty:35 } ]},
+    { id:'expreso', tipo:'base', name:'Expreso', rinde:45, unit:'ml', ings:[
+      { ref:'i:cafegrano', qty:18, nota:'ajusta a los gramos que usas' } ]},
+  ],
+};
+// Bebidas precargadas (frappés con tu receta; fríos y calientes quedan pendientes para que los completes)
+(function () {
+  const baseFr = (polvo, extra) => [
+    { ref:'i:lentera', qty:60 }, { ref:'i:agua', qty:60 }, { ref:'r:expreso', qty:45 },
+    ...(polvo ? [{ ref:'r:' + polvo, qty:30 }] : []), { ref:'i:hielo', qty:140 },
+    ...(extra || []), { ref:'i:vaso12', qty:1 } ];
+  const add = (barra, grupo, name, ings, pend) => PRE_DEF.recetas.push({
+    id: `b_${barra}_${grupo}_${name}`.toLowerCase().replace(/[^a-z0-9]+/g,'_'),
+    tipo:'bebida', barra, grupo, name, rinde:1, unit:'pza', ings: ings || [], pendiente: !!pend });
+  const FR = 'Frappuccino';
+  const cafe  = baseFr('pcap');
+  const moka  = baseFr('pchoc', [{ ref:'r:smoka', qty:30 }]);
+  const vain  = baseFr('pneutra', [{ ref:'r:jvainilla', qty:30 }]);
+  const chai  = baseFr(null, [{ ref:'r:chai', qty:100 }]);
+  [['Café',cafe],['Moka',moka],['Vainilla',vain],['Chai',chai]].forEach(([n,i]) => add('std', FR, n, i));
+  ['Capuccino','Latte','Vainilla latte','Moka latte','Chai latte'].forEach(n => add('std','Fría',n,[],true));
+  ['Capuccino','Americano','Mocha','Chai','Vainilla'].forEach(n => add('std','Caliente',n,[],true));
+  [['Café',cafe],['Moka',moka],['Chai',chai]].forEach(([n,i]) => add('prem', FR, n, i));
+  add('prem', FR, 'Mazapán',  baseFr('pneutra', [{ ref:'i:mazapan',  qty:0 }]), true);
+  add('prem', FR, 'Cajeta',   baseFr('pneutra', [{ ref:'i:cajeta',   qty:0 }]), true);
+  add('prem', FR, 'Carlos V', baseFr('pchoc',   [{ ref:'i:carlosv',  qty:0 }]), true);
+  add('prem', FR, 'Caramel',  baseFr('pneutra', [{ ref:'i:caramelo', qty:0 }]), true);
+  ['Capuccino','Latte','Vainilla latte','Moka latte','Chai latte','Cajeta','Oreo','Caramel latte'].forEach(n => add('prem','Fría',n,[],true));
+  ['Capuccino','Moka','Chai','Chocolate','Americano'].forEach(n => add('prem','Caliente',n,[],true));
+})();
+
+let PR = cargarPrecios();
+function cargarPrecios() {
+  const g = lsGet(KEY_PRECIOS, null);
+  const d = JSON.parse(JSON.stringify(PRE_DEF));
+  if (!g) return { insumos:d.insumos, recetas:d.recetas, borrados:[] };
+  g.borrados = g.borrados || [];
+  // agrega lo nuevo que venga en futuras versiones, sin tocar lo que ya editaste
+  d.insumos.forEach(x => { if (!g.insumos.some(y => y.id === x.id) && !g.borrados.includes('i:'+x.id)) g.insumos.push(x); });
+  d.recetas.forEach(x => { if (!g.recetas.some(y => y.id === x.id) && !g.borrados.includes('r:'+x.id)) g.recetas.push(x); });
+  return g;
+}
+function guardarPrecios() { lsSet(KEY_PRECIOS, PR); }
+
+const BARRAS = { std:{ name:'Mi Coffee Bar Estándar', icon:'☕' }, prem:{ name:'Mi Coffee Bar Premium', icon:'👑' } };
+const GRUPOS = ['Frappuccino', 'Fría', 'Caliente'];
+
+function getRef(ref) {
+  if (!ref) return null;
+  const [t, id] = [ref.slice(0,1), ref.slice(2)];
+  return t === 'i' ? PR.insumos.find(x => x.id === id) : PR.recetas.find(x => x.id === id);
+}
+function refUnit(ref) { const o = getRef(ref); return o ? o.unit : ''; }
+function costoReceta(r, depth = 0) {
+  if (!r || depth > 6) return 0;
+  return (r.ings || []).reduce((s, i) => s + (+i.qty || 0) * costoUnit(i.ref, depth + 1), 0);
+}
+function costoUnit(ref, depth = 0) {
+  const o = getRef(ref);
+  if (!o) return 0;
+  if (ref[0] === 'i') return (+o.cant > 0) ? (+o.precio || 0) / +o.cant : 0;
+  return (+o.rinde > 0) ? costoReceta(o, depth) / +o.rinde : 0;
+}
+// ¿le falta algún precio? (insumos en $0 que no son gratis)
+function faltaPrecio(ref, depth = 0) {
+  const o = getRef(ref);
+  if (!o || depth > 6) return false;
+  if (ref[0] === 'i') return !(+o.precio > 0) && !o.libre;
+  return (o.ings || []).some(i => +i.qty > 0 && faltaPrecio(i.ref, depth + 1));
+}
+const fmtN = (v, d = 2) => (+v || 0).toLocaleString('es-MX', { maximumFractionDigits:d });
+const fmtC = v => '$' + (+v || 0).toLocaleString('es-MX', { minimumFractionDigits:2, maximumFractionDigits:2 });
+const fmtCU = v => '$' + (+v || 0).toLocaleString('es-MX', { maximumFractionDigits:4 });
+
+/* ── Servicios de barra de café en el catálogo ─────────────── */
+function serviciosBarra() {
+  return Object.entries(BARRAS).map(([k, b]) => ({
+    id:'cafe_' + k, icon:b.icon, name:b.name, barra:k, basePP:0, ings:[],
+    nBebidas: PR.recetas.filter(r => r.tipo === 'bebida' && r.barra === k).length,
+  }));
+}
+function bebidasDe(barra) { return PR.recetas.filter(r => r.tipo === 'bebida' && r.barra === barra); }
+function bebidaLista(r) { return (r.ings || []).some(i => +i.qty > 0); }
+
+// Totales (por ref directa) para la mezcla de bebidas del evento
+function totalesMezcla() {
+  const tot = {};
+  bebidasDe(S.service.barra).forEach(b => {
+    const n = +(S.mix || {})[b.id] || 0;
+    if (!n || !bebidaLista(b)) return;
+    b.ings.forEach(i => { if (+i.qty > 0) tot[i.ref] = (tot[i.ref] || 0) + i.qty * n; });
+  });
+  return tot;
+}
+function totalBebidas() { return Object.values(S.mix || {}).reduce((s, n) => s + (+n || 0), 0); }
+function barraIngs(personas) {
+  const p = Math.max(1, +personas || 1);
+  return Object.entries(totalesMezcla()).map(([ref, q]) => {
+    const o = getRef(ref);
+    return { cat: ref[0] === 'r' ? 'Preparar (tus recetas)' : 'Comprar', name: o ? o.name : '?',
+      qty: q / p, unit: refUnit(ref), costo: q * costoUnit(ref) / p, ref };
+  });
+}
+// Lo que hay que comprar para preparar tus recetas base del evento
+function prepRecetas() {
+  const compra = {}, preparar = {};
+  const bajar = (ref, q, depth) => {
+    if (depth > 6) return;
+    if (ref[0] === 'i') { compra[ref] = (compra[ref] || 0) + q; return; }
+    const r = getRef(ref); if (!r || !(+r.rinde > 0)) return;
+    preparar[ref] = (preparar[ref] || 0) + q;
+    r.ings.forEach(i => bajar(i.ref, (+i.qty || 0) * q / r.rinde, depth + 1));
+  };
+  Object.entries(totalesMezcla()).forEach(([ref, q]) => bajar(ref, q, 0));
+  return { compra, preparar };
+}
+function fmtCant(q, u) {
+  if (u === 'g'  && q >= 1000) return fmtN(q / 1000, 3) + ' kg';
+  if (u === 'ml' && q >= 1000) return fmtN(q / 1000, 3) + ' L';
+  if (u === 'pza') return fmtN(Math.ceil(q), 0) + ' pza';
+  return fmtN(q, 1) + ' ' + u;
+}
+function paqueteTxt(ref, q) {
+  const o = getRef(ref);
+  if (!o || ref[0] !== 'i' || !(+o.cant > 0) || o.libre || (o.unit === 'pza' && +o.cant === 1)) return '';
+  const n = Math.ceil(q / o.cant - 1e-9);
+  return ` · ${n} paquete${n === 1 ? '' : 's'} de ${fmtCant(o.cant, o.unit)}`;
+}
+
+/* ── Paso 2: elegir cuántas bebidas de cada una ─────────────── */
+function renderBarraBox() {
+  const box = document.getElementById('barra-box');
+  const esB = !!(S.service && S.service.barra);
+  const sec = document.getElementById('p2-ing-table')?.closest('.section');
+  if (sec) sec.style.display = esB ? 'none' : '';
+  if (!box) return;
+  if (!esB) { box.style.display = 'none'; box.innerHTML = ''; return; }
+  S.mix = S.mix || {};
+  box.style.display = '';
+  const bebs = bebidasDe(S.service.barra);
+  box.innerHTML = `
+    <div class="section-label">¿Cuántas bebidas de cada una?</div>
+    <p class="field-hint">El costo de cada bebida sale de 🏷️ Mis precios. <button class="link-btn" onclick="openPrecios('bebidas')">Editar precios y recetas</button></p>
+    ${GRUPOS.map(g => {
+      const lista = bebs.filter(b => b.grupo === g);
+      if (!lista.length) return '';
+      return `<div class="mix-grupo">${g === 'Frappuccino' ? '🥤' : g === 'Fría' ? '🧊' : '☕'} ${g}</div>
+      ${lista.map(b => {
+        const ok = bebidaLista(b);
+        return `<div class="mix-row${ok ? '' : ' off'}">
+          <span class="mix-name">${esc(b.name)}<small>${ok ? fmtC(costoReceta(b)) + ' c/u' + (faltaPrecio('r:' + b.id) ? ' · ⚠️ faltan precios' : '') : 'Receta pendiente'}</small></span>
+          ${ok ? `<input type="number" min="0" step="1" inputmode="numeric" value="${S.mix[b.id] || ''}" placeholder="0"
+            oninput="setMix('${b.id}', this.value)" aria-label="Cantidad de ${esc(b.name)}">`
+               : `<button class="link-btn" onclick="openPrecios('bebidas')">Completar</button>`}
+        </div>`; }).join('')}`;
+    }).join('')}
+    <div class="lt-equiv" id="mix-total"></div>`;
+  pintarMixTotal();
+}
+function setMix(id, v) {
+  S.mix[id] = Math.max(0, parseInt(v) || 0);
+  S.editIngs = barraIngs(S.personas);
+  pintarMixTotal(); liveP2(); guardarBorrador();
+}
+function pintarMixTotal() {
+  const el = document.getElementById('mix-total'); if (!el) return;
+  const n = totalBebidas();
+  el.textContent = n ? `${n} bebidas en total · ${fmtN(n / Math.max(1, S.personas || 1), 1)} por persona` : 'Pon cuántas bebidas vas a preparar de cada sabor.';
+}
+
+/* ── Overlay Mis precios ─────────────── */
+let PRE_TAB = 'insumos';
+function openPrecios(tab) {
+  PR = cargarPrecios();
+  if (tab) PRE_TAB = tab;
+  document.getElementById('pre-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  renderPrecios();
+}
+function closePrecios() {
+  document.getElementById('pre-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  renderCatalog();
+  if (S.step === 2 && S.service) {
+    if (S.service.barra) { S.editIngs = barraIngs(S.personas); renderBarraBox(); }
+    liveP2();
+  }
+}
+function preTab(t) { PRE_TAB = t; renderPrecios(); document.getElementById('pre-body').scrollTop = 0; }
+function renderPrecios() {
+  document.querySelectorAll('.pre-tab').forEach(b => b.classList.toggle('on', b.dataset.t === PRE_TAB));
+  const body = document.getElementById('pre-body');
+  if (PRE_TAB === 'insumos') body.innerHTML = htmlInsumos();
+  else if (PRE_TAB === 'recetas') body.innerHTML = htmlRecetas(PR.recetas.filter(r => r.tipo === 'base'), 'base');
+  else body.innerHTML = Object.entries(BARRAS).map(([k, b]) => `
+      <h3 class="pre-h3">${b.icon} ${b.name}</h3>
+      ${GRUPOS.map(g => `<div class="mix-grupo">${g}</div>
+        ${htmlRecetas(PR.recetas.filter(r => r.tipo === 'bebida' && r.barra === k && r.grupo === g), 'bebida', k, g)}`).join('')}`).join('');
+}
+function htmlInsumos() {
+  const faltan = PR.insumos.filter(i => !(+i.precio > 0) && !i.libre).length;
+  return `
+    <p class="field-hint">Escribe <strong>cuánto pagas</strong> y <strong>de qué tamaño</strong> es el paquete. El costo por gramo, ml o pieza sale solo, y se actualiza en todas tus recetas y bebidas.</p>
+    ${faltan ? `<div class="pre-alert">⚠️ ${faltan} insumo${faltan === 1 ? '' : 's'} sin precio. Están marcados abajo.</div>` : ''}
+    <div class="pre-list">
+    ${PR.insumos.map(i => `
+      <div class="pre-ins${!(+i.precio > 0) && !i.libre ? ' falta' : ''}">
+        <input class="pi-name" type="text" value="${esc(i.name)}" oninput="setIns('${i.id}','name',this.value)" aria-label="Nombre del insumo">
+        <div class="pi-line">
+          <span>$</span><input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${i.precio || ''}" placeholder="0"
+            oninput="setIns('${i.id}','precio',this.value)" aria-label="Precio que pagas">
+          <span>por</span><input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${i.cant || ''}" placeholder="1"
+            oninput="setIns('${i.id}','cant',this.value)" aria-label="Tamaño del paquete">
+          <select class="unit-sel pi-unit" onchange="setIns('${i.id}','unit',this.value);renderPrecios()" aria-label="Unidad">
+            ${['g','ml','pza'].map(u => `<option${u === i.unit ? ' selected' : ''}>${u}</option>`).join('')}
+          </select>
+          <button class="rm-row" onclick="delIns('${i.id}')" aria-label="Borrar insumo">✕</button>
+        </div>
+        <div class="pi-cu" id="cu-${i.id}">${cuTxt(i)}</div>
+      </div>`).join('')}
+    </div>
+    <button class="add-row-btn" onclick="addIns()">＋ Agregar insumo</button>`;
+}
+function cuTxt(i) {
+  if (i.libre && !(+i.precio > 0)) return 'Sin costo';
+  if (!(+i.precio > 0)) return '⚠️ Falta el precio';
+  return `= ${fmtCU(costoUnit('i:' + i.id))} por ${i.unit}`;
+}
+function setIns(id, f, v) {
+  const i = PR.insumos.find(x => x.id === id); if (!i) return;
+  i[f] = (f === 'precio' || f === 'cant') ? (+v || 0) : v;
+  guardarPrecios();
+  const cu = document.getElementById('cu-' + id); if (cu) cu.textContent = cuTxt(i);
+  cu?.closest('.pre-ins')?.classList.toggle('falta', !(+i.precio > 0) && !i.libre);
+}
+function addIns() {
+  PR.insumos.push({ id:'ins_' + Date.now(), name:'', precio:0, cant:1000, unit:'g' });
+  guardarPrecios(); renderPrecios();
+  const ins = document.querySelectorAll('#pre-body .pi-name'); ins[ins.length - 1]?.focus();
+}
+function usos(ref) { return PR.recetas.filter(r => r.ings.some(i => i.ref === ref)).map(r => r.name); }
+function delIns(id) {
+  const u = usos('i:' + id), i = PR.insumos.find(x => x.id === id);
+  if (!confirm(u.length ? `"${i.name}" se usa en: ${u.join(', ')}. ¿Borrarlo de todos modos?` : `¿Borrar "${i.name || 'insumo'}"?`)) return;
+  PR.insumos = PR.insumos.filter(x => x.id !== id); PR.borrados.push('i:' + id);
+  guardarPrecios(); renderPrecios();
+}
+function opcionesRef(sel, selfId) {
+  const op = (ref, name, u) => `<option value="${ref}"${ref === sel ? ' selected' : ''}>${esc(name)} (${u})</option>`;
+  return `<option value="">— elige —</option>
+    <optgroup label="Insumos que compras">${PR.insumos.map(i => op('i:' + i.id, i.name, i.unit)).join('')}</optgroup>
+    <optgroup label="Tus recetas base">${PR.recetas.filter(r => r.tipo === 'base' && r.id !== selfId).map(r => op('r:' + r.id, r.name, r.unit)).join('')}</optgroup>`;
+}
+function htmlRecetas(lista, tipo, barra, grupo) {
+  return lista.map(r => {
+    const total = costoReceta(r), falta = faltaPrecio('r:' + r.id);
+    return `<details class="pre-rec"${r.pendiente || falta ? ' open' : ''}>
+      <summary>
+        <span class="pr-name">${esc(r.name) || 'Sin nombre'}</span>
+        <span class="pr-cost" id="rc-${r.id}">${tipo === 'base' ? `${fmtCU(total / (r.rinde || 1))}/${r.unit}` : fmtC(total)}</span>
+        ${r.pendiente || !bebidaLista(r) ? '<span class="pr-tag">pendiente</span>' : falta ? '<span class="pr-tag">⚠️ precios</span>' : ''}
+      </summary>
+      <div class="pr-body">
+        <div class="pi-line">
+          <input class="pi-name" type="text" value="${esc(r.name)}" oninput="setRec('${r.id}','name',this.value)" aria-label="Nombre">
+          ${tipo === 'base' ? `<span>rinde</span><input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${r.rinde}"
+            oninput="setRec('${r.id}','rinde',this.value)" aria-label="Cuánto rinde">
+            <select class="unit-sel pi-unit" onchange="setRec('${r.id}','unit',this.value);renderPrecios()">${['ml','g','pza'].map(u => `<option${u === r.unit ? ' selected' : ''}>${u}</option>`).join('')}</select>` : ''}
+        </div>
+        ${r.ings.map((i, k) => `
+          <div class="pr-ing">
+            <select class="unit-sel pr-ref" onchange="setRecIng('${r.id}',${k},'ref',this.value);renderPrecios()" aria-label="Ingrediente">${opcionesRef(i.ref, r.id)}</select>
+            <input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${i.qty || ''}" placeholder="0"
+              oninput="setRecIng('${r.id}',${k},'qty',this.value)" aria-label="Cantidad">
+            <span class="pr-u">${refUnit(i.ref)}</span>
+            <span class="pr-ic" id="ic-${r.id}-${k}">${fmtC((+i.qty || 0) * costoUnit(i.ref))}</span>
+            <button class="rm-row" onclick="delRecIng('${r.id}',${k})" aria-label="Quitar">✕</button>
+            ${i.nota ? `<div class="pr-nota">${esc(i.nota)}</div>` : ''}
+          </div>`).join('')}
+        <button class="add-row-btn" onclick="addRecIng('${r.id}')">＋ Ingrediente</button>
+        <div class="pr-tot" id="rt-${r.id}">${totTxt(r)}</div>
+        <button class="restore-btn" onclick="delRec('${r.id}')">🗑️ Borrar ${tipo === 'base' ? 'receta' : 'bebida'}</button>
+      </div>
+    </details>`;
+  }).join('') + `<button class="add-row-btn" onclick="addRec('${tipo}','${barra || ''}','${grupo || ''}')">＋ Agregar ${tipo === 'base' ? 'receta base' : 'bebida ' + (grupo || '').toLowerCase()}</button>`;
+}
+function totTxt(r) {
+  const t = costoReceta(r);
+  return r.tipo === 'base'
+    ? `Costo total: <strong>${fmtC(t)}</strong> · rinde ${fmtN(r.rinde, 1)} ${r.unit} · <strong>${fmtCU(t / (r.rinde || 1))} por ${r.unit}</strong>`
+    : `Te cuesta <strong>${fmtC(t)}</strong> cada bebida${faltaPrecio('r:' + r.id) ? ' · ⚠️ faltan precios en Insumos' : ''}`;
+}
+function pintarCostosRec() {
+  PR.recetas.forEach(r => {
+    const t = costoReceta(r);
+    const rc = document.getElementById('rc-' + r.id); if (rc) rc.textContent = r.tipo === 'base' ? `${fmtCU(t / (r.rinde || 1))}/${r.unit}` : fmtC(t);
+    const rt = document.getElementById('rt-' + r.id); if (rt) rt.innerHTML = totTxt(r);
+    r.ings.forEach((i, k) => { const e = document.getElementById(`ic-${r.id}-${k}`); if (e) e.textContent = fmtC((+i.qty || 0) * costoUnit(i.ref)); });
+  });
+}
+function setRec(id, f, v) {
+  const r = PR.recetas.find(x => x.id === id); if (!r) return;
+  r[f] = f === 'rinde' ? (+v || 0) : v;
+  guardarPrecios(); pintarCostosRec();
+}
+function setRecIng(id, k, f, v) {
+  const r = PR.recetas.find(x => x.id === id); if (!r || !r.ings[k]) return;
+  r.ings[k][f] = f === 'qty' ? (+v || 0) : v;
+  if (r.tipo === 'bebida' && bebidaLista(r)) r.pendiente = false;
+  guardarPrecios(); pintarCostosRec();
+}
+function addRecIng(id) {
+  const r = PR.recetas.find(x => x.id === id); if (!r) return;
+  r.ings.push({ ref:'', qty:0 }); guardarPrecios(); renderPrecios();
+}
+function delRecIng(id, k) {
+  const r = PR.recetas.find(x => x.id === id); if (!r) return;
+  r.ings.splice(k, 1); guardarPrecios(); renderPrecios();
+}
+function addRec(tipo, barra, grupo) {
+  const r = tipo === 'base'
+    ? { id:'rec_' + Date.now(), tipo, name:'Nueva receta', rinde:1000, unit:'ml', ings:[] }
+    : { id:'beb_' + Date.now(), tipo, barra, grupo, name:'Nueva bebida', rinde:1, unit:'pza', ings:[], pendiente:true };
+  PR.recetas.push(r); guardarPrecios(); renderPrecios();
+}
+function delRec(id) {
+  const r = PR.recetas.find(x => x.id === id), u = usos('r:' + id);
+  if (!confirm(u.length ? `"${r.name}" se usa en: ${u.join(', ')}. ¿Borrarla de todos modos?` : `¿Borrar "${r.name}"?`)) return;
+  PR.recetas = PR.recetas.filter(x => x.id !== id); PR.borrados.push('r:' + id);
+  guardarPrecios(); renderPrecios();
+}
+
+/* ── Calculadora de paquete para ingredientes del paso 2 ─────────────── */
+function findIng(id) { return (S.editIngs || []).find(i => i.id === id) || (S.customIngs || []).find(i => i.id === id); }
+function togglePaq(id) {
+  const ex = document.getElementById('pq-' + id);
+  if (ex) { ex.remove(); return; }
+  const ing = findIng(id); if (!ing) return;
+  const p = ing.paq || {};
+  document.getElementById('ir-' + id).insertAdjacentHTML('afterend', `
+    <tr id="pq-${id}" class="paq-row"><td colspan="6">
+      <div class="pi-line">
+        <span>Pagué $</span><input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${p.precio || ''}" placeholder="Ej: 24"
+          oninput="setPaq(${id},'precio',this.value)" aria-label="Precio del paquete">
+        <span>por</span><input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${p.cant || ''}" placeholder="Ej: 900"
+          oninput="setPaq(${id},'cant',this.value)" aria-label="Tamaño del paquete">
+        <span>${esc(ing.unit || 'pza')}</span>
+      </div>
+      <div class="pi-cu" id="pqt-${id}">${paqTxt(ing)}</div>
+    </td></tr>`);
+  document.getElementById('pq-' + id)?.querySelector('input')?.focus();
+}
+function paqTxt(ing) {
+  const p = ing.paq;
+  if (!p || !(+p.precio > 0) || !(+p.cant > 0)) return 'Escribe cuánto pagas y de qué tamaño es el paquete; el costo se calcula solo.';
+  return `${fmtN(ing.qty, 2)} ${ing.unit} × ${fmtCU(p.precio / p.cant)} = <strong>${fmtC(ing.qty * p.precio / p.cant)}</strong> por persona`;
+}
+function aplicarPaq(ing) {
+  const p = ing.paq;
+  if (!p || !(+p.precio > 0) || !(+p.cant > 0)) return;
+  ing.costo = +(ing.qty * p.precio / p.cant).toFixed(2);
+  const inp = document.getElementById('ir-' + ing.id)?.querySelector('input.tc-cost'); if (inp) inp.value = ing.costo;
+  const t = document.getElementById('pqt-' + ing.id); if (t) t.innerHTML = paqTxt(ing);
+}
+function setPaq(id, f, v) {
+  const ing = findIng(id); if (!ing) return;
+  ing.paq = { ...(ing.paq || {}), [f]: +v || 0 };
+  aplicarPaq(ing);
+  if (S.editIngs.includes(ing)) { liveP2(); guardarBorrador(); }
+}
+
 function onPersonasChange(el) {
   const v = parseInt(el.value);
   el.classList.toggle('err', !v || v < 1 || v > 2000);
   S.personas = v || 1;
   actualizarEquivLitros();
+  if (S.service && S.service.barra) { S.editIngs = barraIngs(S.personas); pintarMixTotal(); }
   liveP2(); guardarBorrador();
 }
 
@@ -2576,6 +3071,7 @@ function doCalculate() {
     cliente: S.cliente || 'Evento',
     litros:  (srvTieneLitros() && S.modo === 'litros') ? S.litros : null,
     effIngs: eff,
+    barraPrep: S.service.barra ? prepRecetas() : null,
     mlUnidad: srvTieneLitros() ? S.mlUnidad : null,
     fecha:   new Date().toLocaleDateString('es-MX', {day:'2-digit',month:'short',year:'numeric'}),
   };
@@ -2636,6 +3132,24 @@ function renderResults() {
       ${lista.map(i => { const r = prepYCompra(i, c.p); return `
         <div class="prep-row"><span>${esc(i.name)}</span><span class="pv">${r.prep}</span><span class="cv">${r.compra}</span></div>`; }).join('')}
       <div class="prep-note">${c.litros ? `Los líquidos salen de los ${c.litros} L; cantaritos, hielo, sal y decoración van por persona (${c.p}).` : ''} Los kg de fruta usan el rendimiento del paso 2.</div>
+    </div>`;
+  }
+  if (c.barraPrep) {
+    const { compra, preparar } = c.barraPrep;
+    const fila = (ref, q) => { const o = getRef(ref); return `
+        <div class="prep-row"><span>${esc(o ? o.name : '?')}</span><span class="pv">${fmtCant(q, refUnit(ref))}</span>
+        <span class="cv">${fmtC(q * costoUnit(ref))}${paqueteTxt(ref, q)}</span></div>`; };
+    prepHTML += `
+    <div class="shop-group">
+      <div class="shop-group-name">🧪 Tus recetas a preparar</div>
+      <div class="prep-head"><span>Receta</span><span>Cantidad</span><span>Costo</span></div>
+      ${Object.entries(preparar).map(([r, q]) => fila(r, q)).join('') || '<div class="prep-note">Ninguna</div>'}
+    </div>
+    <div class="shop-group">
+      <div class="shop-group-name">🛒 Todo lo que hay que comprar</div>
+      <div class="prep-head"><span>Insumo</span><span>Cantidad</span><span>Costo</span></div>
+      ${Object.entries(compra).map(([r, q]) => fila(r, q)).join('')}
+      <div class="prep-note">Incluye lo que llevan tus jarabes y polvos. Los precios salen de 🏷️ Mis precios.</div>
     </div>`;
   }
   document.getElementById('r-shop').innerHTML = prepHTML + Object.entries(bycat).map(([cat, items]) => `
