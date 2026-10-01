@@ -2556,7 +2556,11 @@ function actualizarEquivLitros() {
 function setRend(id, val) {
   const ing = S.editIngs.find(i => i.id === id);
   if (ing && ing.compra) ing.compra = { ...ing.compra, rend: +val || ing.compra.rend };
-  if (ing && ing.paq && paqNecesitaRend(ing) && dimU(ing.paq.unit) === 'm') { ing.paq.rend = +val || ing.paq.rend; aplicarPaq(ing); liveP2(); }
+  if (ing && ing.paq && paqNecesitaRend(ing) && dimU(ing.paq.unit) === 'm' && +val > 0) {
+    ing.paq.rend = +val; ing.paq.obt = +(+val * paqRefs(ing.paq)).toFixed(1);
+    const row = document.getElementById('pq-' + ing.id); if (row) renderPaqRow(ing.id);
+    aplicarPaq(ing); liveP2();
+  }
   guardarBorrador();
 }
 
@@ -2988,10 +2992,13 @@ function togglePaq(id) {
   const ing = findIng(id); if (!ing) return;
   if (!ing.paq) ing.paq = { unit: (ing.compra && ing.compra.unit === 'kg') ? 'kg' : (UNIDADES.includes(ing.unit) ? ing.unit : 'pza') };
   if (!ing.paq.rend && ing.compra && ing.compra.rend) ing.paq.rend = ing.compra.rend;
+  if (ing.paq.obt == null && +ing.paq.rend > 0 && +ing.paq.cant > 0) ing.paq.obt = +(ing.paq.rend * paqRefs(ing.paq)).toFixed(1);
   document.getElementById('ir-' + id).insertAdjacentHTML('afterend', `<tr id="pq-${id}" class="paq-row"><td colspan="6"></td></tr>`);
   renderPaqRow(id);
   document.getElementById('pq-' + id)?.querySelector('input')?.focus();
 }
+// cuántos "kg / L / pza" hay en el paquete
+function paqRefs(p) { const d = dimU(p.unit); return (+p.cant || 0) * (UF[p.unit] || 1) / ((d === 'm' || d === 'v') ? 1000 : 1); }
 function paqNecesitaRend(ing) { return dimU(ing.paq.unit) !== dimU(ing.unit); }
 function paqRefTxt(u) { const d = dimU(u); return d === 'm' ? '1 kg' : d === 'v' ? '1 L' : '1 ' + u; }
 function renderPaqRow(id) {
@@ -3009,8 +3016,9 @@ function renderPaqRow(id) {
       </select>
     </div>
     ${paqNecesitaRend(ing) ? `<div class="pi-line">
-      <span>Rinde: ${paqRefTxt(p.unit)} =</span><input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${p.rend || ''}" placeholder="Ej: 400"
-        oninput="setPaq(${id},'rend',this.value)" aria-label="Rendimiento">
+      <span>y ${p.cant ? fmtN(p.cant, 3) + ' ' + p.unit : 'eso'} ${dimU(p.unit) === 'm' ? 'exprimido / preparado' : 'preparado'} me dio</span>
+      <input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${p.obt || ''}" placeholder="Ej: 600"
+        oninput="setPaq(${id},'obt',this.value)" aria-label="Cantidad real que obtuviste">
       <span>${esc(ing.unit)}</span></div>` : ''}
     <div class="pi-cu" id="pqt-${id}">${paqTxt(ing)}</div>`;
 }
@@ -3020,16 +3028,23 @@ function paqCU(ing) {
   if (!p || !(+p.precio > 0) || !(+p.cant > 0)) return null;
   const porBase = p.precio / (p.cant * (UF[p.unit] || 1));        // $ por g, ml o pza comprada
   if (!paqNecesitaRend(ing)) return porBase * (UF[ing.unit] || 1);
-  if (!(+p.rend > 0)) return null;
-  const porRef = porBase * (dimU(p.unit) === 'm' || dimU(p.unit) === 'v' ? 1000 : 1); // $ por kg, L o pza
-  return porRef / p.rend;
+  if (!(+p.obt > 0)) return null;
+  return p.precio / p.obt;   // lo que pagaste ÷ lo que realmente te salió
+}
+function renderPaqRowLabel(ing) {
+  const row = document.getElementById('pq-' + ing.id); if (!row) return;
+  const span = row.querySelectorAll('.pi-line')[1]?.querySelector('span');
+  if (span) span.textContent = `y ${ing.paq.cant ? fmtN(ing.paq.cant, 3) + ' ' + ing.paq.unit : 'eso'} ${dimU(ing.paq.unit) === 'm' ? 'exprimido / preparado' : 'preparado'} me dio`;
+  if (!span && paqNecesitaRend(ing)) renderPaqRow(ing.id);
 }
 function paqTxt(ing) {
   const p = ing.paq || {};
   if (!(+p.precio > 0) || !(+p.cant > 0)) return 'Escribe cuánto pagas y en qué lo compras (kg, L, piezas…). El costo se calcula solo.';
   const cu = paqCU(ing);
-  if (cu === null) return `¿Cuántos ${esc(ing.unit)} te salen de ${paqRefTxt(p.unit)}? Escríbelo en "Rinde".`;
-  return `${fmtN(ing.qty, 2)} ${esc(ing.unit)} × ${fmtCU(cu)} = <strong>${fmtC(ing.qty * cu)}</strong> por persona`;
+  if (cu === null) return `Escribe cuántos ${esc(ing.unit)} te salieron de ${fmtN(p.cant, 3)} ${p.unit}.`;
+  const extra = paqNecesitaRend(ing)
+    ? `<br><span style="color:var(--t3);font-weight:400">$${fmtN(p.precio, 2)} ÷ ${fmtN(p.obt, 1)} ${esc(ing.unit)} = ${fmtCU(cu)} por ${esc(ing.unit)} · tu rendimiento: ${paqRefTxt(p.unit)} = ${fmtN(p.obt / paqRefs(p), 1)} ${esc(ing.unit)}</span>` : '';
+  return `${fmtN(ing.qty, 2)} ${esc(ing.unit)} × ${fmtCU(cu)} = <strong>${fmtC(ing.qty * cu)}</strong> por persona${extra}`;
 }
 function aplicarPaq(ing) {
   if (!ing || !ing.paq) return;
@@ -3042,8 +3057,16 @@ function aplicarPaq(ing) {
 function setPaq(id, f, v) {
   const ing = findIng(id); if (!ing) return;
   ing.paq = { ...(ing.paq || {}), [f]: f === 'unit' ? v : (+v || 0) };
-  // mantener el rendimiento de la lista de compras (ml por kg) igual al que pones aquí
-  if (f === 'rend' && ing.compra && ing.compra.rend && dimU(ing.paq.unit) === 'm') ing.compra = { ...ing.compra, rend: +v || ing.compra.rend };
+  if (f === 'cant' || f === 'unit') renderPaqRowLabel(ing);
+  // la lista de compras (kg a comprar) usa tu rendimiento real
+  const p = ing.paq, refs = paqRefs(p);
+  if (paqNecesitaRend(ing) && +p.obt > 0 && refs > 0) {
+    p.rend = +(p.obt / refs).toFixed(2);
+    if (ing.compra && ing.compra.rend && dimU(p.unit) === 'm') {
+      ing.compra = { ...ing.compra, rend: p.rend };
+      document.querySelectorAll('.rend-row input').forEach(r => { if (r.getAttribute('aria-label') === 'Rendimiento de ' + ing.name) r.value = p.rend; });
+    }
+  }
   aplicarPaq(ing);
   if (S.editIngs.includes(ing)) { liveP2(); guardarBorrador(); }
 }
