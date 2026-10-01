@@ -1433,13 +1433,13 @@ input[type=range]::-webkit-slider-thumb {
     <div class="section">
       <div class="section-label">Gastos del evento <span class="opt">(opcional)</span></div>
       <p class="field-hint">Sueldos, gasolina, renta de mobiliario… Pon el monto total del evento. Se suman a tu inversión.</p>
-      <div id="gastos-list"></div>
+      <div id="gev-list"></div>
       <div class="gasto-chips">
         <button type="button" onclick="addGasto('Sueldos de empleados')">＋ Sueldos</button>
         <button type="button" onclick="addGasto('Gasolina')">＋ Gasolina</button>
         <button type="button" onclick="addGasto('')">＋ Otro gasto</button>
       </div>
-      <div class="gasto-total" id="gastos-total"></div>
+      <div class="gasto-total" id="gev-total"></div>
     </div>
 
     <!-- Vista previa en tiempo real -->
@@ -2316,7 +2316,8 @@ function setP2Ing(id, field, val) {
   const ing = S.editIngs.find(i => i.id === id);
   if (ing) ing[field] = (['qty','costo'].includes(field)) ? +val || 0 : val;
   if (ing && field === 'qty') delete ing.mlPor10L;
-  if (ing && ['qty','unit'].includes(field)) aplicarPaq(ing);
+  if (ing && field === 'unit') renderPaqRow(id);
+  if (ing && ['qty','unit'].includes(field)) { aplicarPaq(ing); liveP2(); }
   guardarBorrador();
 }
 
@@ -2389,7 +2390,7 @@ function fillP2() {
 ════════════════════════════════════════════════════════ */
 function totalGastosEv() { return S.gastosEv.reduce((s, g) => s + (+g.monto || 0), 0); }
 function renderGastosEv() {
-  const el = document.getElementById('gastos-list');
+  const el = document.getElementById('gev-list');
   if (!el) return;
   el.innerHTML = S.gastosEv.map(g => `
     <div class="gasto-row">
@@ -2402,14 +2403,14 @@ function renderGastosEv() {
   pintarTotalGastos();
 }
 function pintarTotalGastos() {
-  const t = document.getElementById('gastos-total');
+  const t = document.getElementById('gev-total');
   const tot = totalGastosEv();
   if (t) t.innerHTML = tot > 0 ? `Total de gastos del evento: <strong>${mxn(tot)}</strong>` : '';
 }
 function addGasto(concepto) {
   S.gastosEv.push({ id: Date.now() + Math.random(), concepto, monto: 0 });
   renderGastosEv();
-  const inputs = document.querySelectorAll('#gastos-list .gasto-row:last-child input');
+  const inputs = document.querySelectorAll('#gev-list .gasto-row:last-child input');
   if (inputs.length) (concepto ? inputs[1] : inputs[0]).focus();
   guardarBorrador();
 }
@@ -2555,6 +2556,7 @@ function actualizarEquivLitros() {
 function setRend(id, val) {
   const ing = S.editIngs.find(i => i.id === id);
   if (ing && ing.compra) ing.compra = { ...ing.compra, rend: +val || ing.compra.rend };
+  if (ing && ing.paq && paqNecesitaRend(ing) && dimU(ing.paq.unit) === 'm') { ing.paq.rend = +val || ing.paq.rend; aplicarPaq(ing); liveP2(); }
   guardarBorrador();
 }
 
@@ -2681,12 +2683,15 @@ function guardarPrecios() { lsSet(KEY_PRECIOS, PR); }
 const BARRAS = { std:{ name:'Mi Coffee Bar Estándar', icon:'☕' }, prem:{ name:'Mi Coffee Bar Premium', icon:'👑' } };
 const GRUPOS = ['Frappuccino', 'Fría', 'Caliente'];
 
+const UF = { kg:1000, L:1000 };
+const baseU = u => u === 'kg' ? 'g' : u === 'L' ? 'ml' : u;
+const dimU  = u => (u === 'g' || u === 'kg') ? 'm' : (u === 'ml' || u === 'L') ? 'v' : (u || 'pza');
 function getRef(ref) {
   if (!ref) return null;
   const [t, id] = [ref.slice(0,1), ref.slice(2)];
   return t === 'i' ? PR.insumos.find(x => x.id === id) : PR.recetas.find(x => x.id === id);
 }
-function refUnit(ref) { const o = getRef(ref); return o ? o.unit : ''; }
+function refUnit(ref) { const o = getRef(ref); return o ? baseU(o.unit) : ''; }
 function costoReceta(r, depth = 0) {
   if (!r || depth > 6) return 0;
   return (r.ings || []).reduce((s, i) => s + (+i.qty || 0) * costoUnit(i.ref, depth + 1), 0);
@@ -2694,7 +2699,7 @@ function costoReceta(r, depth = 0) {
 function costoUnit(ref, depth = 0) {
   const o = getRef(ref);
   if (!o) return 0;
-  if (ref[0] === 'i') return (+o.cant > 0) ? (+o.precio || 0) / +o.cant : 0;
+  if (ref[0] === 'i') return (+o.cant > 0) ? (+o.precio || 0) / (+o.cant * (UF[o.unit] || 1)) : 0;
   return (+o.rinde > 0) ? costoReceta(o, depth) / +o.rinde : 0;
 }
 // ¿le falta algún precio? (insumos en $0 que no son gratis)
@@ -2759,8 +2764,9 @@ function fmtCant(q, u) {
 function paqueteTxt(ref, q) {
   const o = getRef(ref);
   if (!o || ref[0] !== 'i' || !(+o.cant > 0) || o.libre || (o.unit === 'pza' && +o.cant === 1)) return '';
-  const n = Math.ceil(q / o.cant - 1e-9);
-  return ` · ${n} paquete${n === 1 ? '' : 's'} de ${fmtCant(o.cant, o.unit)}`;
+  const tam = +o.cant * (UF[o.unit] || 1);
+  const n = Math.ceil(q / tam - 1e-9);
+  return ` · ${n} paquete${n === 1 ? '' : 's'} de ${fmtCant(tam, baseU(o.unit))}`;
 }
 
 /* ── Paso 2: elegir cuántas bebidas de cada una ─────────────── */
@@ -2847,8 +2853,8 @@ function htmlInsumos() {
             oninput="setIns('${i.id}','precio',this.value)" aria-label="Precio que pagas">
           <span>por</span><input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${i.cant || ''}" placeholder="1"
             oninput="setIns('${i.id}','cant',this.value)" aria-label="Tamaño del paquete">
-          <select class="unit-sel pi-unit" onchange="setIns('${i.id}','unit',this.value);renderPrecios()" aria-label="Unidad">
-            ${['g','ml','pza'].map(u => `<option${u === i.unit ? ' selected' : ''}>${u}</option>`).join('')}
+          <select class="unit-sel pi-unit" onchange="cambiaUnidadIns('${i.id}',this)" aria-label="Unidad">
+            ${['g','kg','ml','L','pza'].map(u => `<option${u === i.unit ? ' selected' : ''}>${u}</option>`).join('')}
           </select>
           <button class="rm-row" onclick="delIns('${i.id}')" aria-label="Borrar insumo">✕</button>
         </div>
@@ -2860,7 +2866,8 @@ function htmlInsumos() {
 function cuTxt(i) {
   if (i.libre && !(+i.precio > 0)) return 'Sin costo';
   if (!(+i.precio > 0)) return '⚠️ Falta el precio';
-  return `= ${fmtCU(costoUnit('i:' + i.id))} por ${i.unit}`;
+  const cu = costoUnit('i:' + i.id), b = baseU(i.unit);
+  return `= ${fmtCU(cu)} por ${b}` + (b !== 'pza' ? ` · ${fmtC(cu * 1000)} por ${b === 'g' ? 'kg' : 'L'}` : '');
 }
 function setIns(id, f, v) {
   const i = PR.insumos.find(x => x.id === id); if (!i) return;
@@ -2868,6 +2875,13 @@ function setIns(id, f, v) {
   guardarPrecios();
   const cu = document.getElementById('cu-' + id); if (cu) cu.textContent = cuTxt(i);
   cu?.closest('.pre-ins')?.classList.toggle('falta', !(+i.precio > 0) && !i.libre);
+}
+function cambiaUnidadIns(id, sel) {
+  const i = PR.insumos.find(x => x.id === id); if (!i) return;
+  const u = usos('i:' + id);
+  if (u.length && dimU(sel.value) !== dimU(i.unit) &&
+      !confirm(`"${i.name}" se usa en ${u.join(', ')} en ${baseU(i.unit)}. Si lo cambias a ${sel.value}, revisa esas cantidades. ¿Cambiar?`)) { sel.value = i.unit; return; }
+  setIns(id, 'unit', sel.value); renderPrecios();
 }
 function addIns() {
   PR.insumos.push({ id:'ins_' + Date.now(), name:'', precio:0, cant:1000, unit:'g' });
@@ -2972,35 +2986,64 @@ function togglePaq(id) {
   const ex = document.getElementById('pq-' + id);
   if (ex) { ex.remove(); return; }
   const ing = findIng(id); if (!ing) return;
-  const p = ing.paq || {};
-  document.getElementById('ir-' + id).insertAdjacentHTML('afterend', `
-    <tr id="pq-${id}" class="paq-row"><td colspan="6">
-      <div class="pi-line">
-        <span>Pagué $</span><input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${p.precio || ''}" placeholder="Ej: 24"
-          oninput="setPaq(${id},'precio',this.value)" aria-label="Precio del paquete">
-        <span>por</span><input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${p.cant || ''}" placeholder="Ej: 900"
-          oninput="setPaq(${id},'cant',this.value)" aria-label="Tamaño del paquete">
-        <span>${esc(ing.unit || 'pza')}</span>
-      </div>
-      <div class="pi-cu" id="pqt-${id}">${paqTxt(ing)}</div>
-    </td></tr>`);
+  if (!ing.paq) ing.paq = { unit: (ing.compra && ing.compra.unit === 'kg') ? 'kg' : (UNIDADES.includes(ing.unit) ? ing.unit : 'pza') };
+  if (!ing.paq.rend && ing.compra && ing.compra.rend) ing.paq.rend = ing.compra.rend;
+  document.getElementById('ir-' + id).insertAdjacentHTML('afterend', `<tr id="pq-${id}" class="paq-row"><td colspan="6"></td></tr>`);
+  renderPaqRow(id);
   document.getElementById('pq-' + id)?.querySelector('input')?.focus();
 }
-function paqTxt(ing) {
+function paqNecesitaRend(ing) { return dimU(ing.paq.unit) !== dimU(ing.unit); }
+function paqRefTxt(u) { const d = dimU(u); return d === 'm' ? '1 kg' : d === 'v' ? '1 L' : '1 ' + u; }
+function renderPaqRow(id) {
+  const row = document.getElementById('pq-' + id), ing = findIng(id);
+  if (!row || !ing) return;
   const p = ing.paq;
-  if (!p || !(+p.precio > 0) || !(+p.cant > 0)) return 'Escribe cuánto pagas y de qué tamaño es el paquete; el costo se calcula solo.';
-  return `${fmtN(ing.qty, 2)} ${ing.unit} × ${fmtCU(p.precio / p.cant)} = <strong>${fmtC(ing.qty * p.precio / p.cant)}</strong> por persona`;
+  row.firstElementChild.innerHTML = `
+    <div class="pi-line">
+      <span>Pagué $</span><input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${p.precio || ''}" placeholder="Ej: 24"
+        oninput="setPaq(${id},'precio',this.value)" aria-label="Precio del paquete">
+      <span>por</span><input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${p.cant || ''}" placeholder="Ej: 1"
+        oninput="setPaq(${id},'cant',this.value)" aria-label="Tamaño del paquete">
+      <select class="unit-sel pi-unit" onchange="setPaq(${id},'unit',this.value);renderPaqRow(${id})" aria-label="Unidad en que lo compras">
+        ${['g','kg','ml','L','pza'].map(u => `<option${u === p.unit ? ' selected' : ''}>${u}</option>`).join('')}
+      </select>
+    </div>
+    ${paqNecesitaRend(ing) ? `<div class="pi-line">
+      <span>Rinde: ${paqRefTxt(p.unit)} =</span><input class="pi-num" type="number" min="0" step="any" inputmode="decimal" value="${p.rend || ''}" placeholder="Ej: 400"
+        oninput="setPaq(${id},'rend',this.value)" aria-label="Rendimiento">
+      <span>${esc(ing.unit)}</span></div>` : ''}
+    <div class="pi-cu" id="pqt-${id}">${paqTxt(ing)}</div>`;
+}
+// costo de 1 unidad del ingrediente según el paquete
+function paqCU(ing) {
+  const p = ing.paq;
+  if (!p || !(+p.precio > 0) || !(+p.cant > 0)) return null;
+  const porBase = p.precio / (p.cant * (UF[p.unit] || 1));        // $ por g, ml o pza comprada
+  if (!paqNecesitaRend(ing)) return porBase * (UF[ing.unit] || 1);
+  if (!(+p.rend > 0)) return null;
+  const porRef = porBase * (dimU(p.unit) === 'm' || dimU(p.unit) === 'v' ? 1000 : 1); // $ por kg, L o pza
+  return porRef / p.rend;
+}
+function paqTxt(ing) {
+  const p = ing.paq || {};
+  if (!(+p.precio > 0) || !(+p.cant > 0)) return 'Escribe cuánto pagas y en qué lo compras (kg, L, piezas…). El costo se calcula solo.';
+  const cu = paqCU(ing);
+  if (cu === null) return `¿Cuántos ${esc(ing.unit)} te salen de ${paqRefTxt(p.unit)}? Escríbelo en "Rinde".`;
+  return `${fmtN(ing.qty, 2)} ${esc(ing.unit)} × ${fmtCU(cu)} = <strong>${fmtC(ing.qty * cu)}</strong> por persona`;
 }
 function aplicarPaq(ing) {
-  const p = ing.paq;
-  if (!p || !(+p.precio > 0) || !(+p.cant > 0)) return;
-  ing.costo = +(ing.qty * p.precio / p.cant).toFixed(2);
-  const inp = document.getElementById('ir-' + ing.id)?.querySelector('input.tc-cost'); if (inp) inp.value = ing.costo;
+  if (!ing || !ing.paq) return;
+  const cu = paqCU(ing);
   const t = document.getElementById('pqt-' + ing.id); if (t) t.innerHTML = paqTxt(ing);
+  if (cu === null) return;
+  ing.costo = +(ing.qty * cu).toFixed(2);
+  const inp = document.getElementById('ir-' + ing.id)?.querySelector('input.tc-cost'); if (inp) inp.value = ing.costo;
 }
 function setPaq(id, f, v) {
   const ing = findIng(id); if (!ing) return;
-  ing.paq = { ...(ing.paq || {}), [f]: +v || 0 };
+  ing.paq = { ...(ing.paq || {}), [f]: f === 'unit' ? v : (+v || 0) };
+  // mantener el rendimiento de la lista de compras (ml por kg) igual al que pones aquí
+  if (f === 'rend' && ing.compra && ing.compra.rend && dimU(ing.paq.unit) === 'm') ing.compra = { ...ing.compra, rend: +v || ing.compra.rend };
   aplicarPaq(ing);
   if (S.editIngs.includes(ing)) { liveP2(); guardarBorrador(); }
 }
@@ -3726,8 +3769,9 @@ function convertirCotizacion() {
       costoPP:   S.calc.costoPP,
       costoTot:  S.calc.costoTot,
       ganancia:  S.calc.ganTot,
+      gastosEv:  (S.calc.items || []).filter(i => i.gasto).reduce((s, i) => s + (+i.monto || 0), 0),
       margen:    S.calc.margenR,
-      fecha:     new Date().toISOString().split('T')[0],
+      fecha:     fechaLocal(),
       estado:    'confirmado',
     };
   } else {
@@ -3746,7 +3790,7 @@ function convertirCotizacion() {
       costoTot:  Math.round(h.precioTot - h.ganTot),
       ganancia:  h.ganTot,
       margen:    Math.round((h.ganTot / h.precioTot) * 100),
-      fecha:     new Date().toISOString().split('T')[0],
+      fecha:     fechaLocal(),
       estado:    'confirmado',
     };
   }
@@ -3761,6 +3805,10 @@ function convertirCotizacion() {
 // ── Helpers ──────────────────────────────────────
 // mxn ya definida
 
+// Fecha de hoy en tu hora local (antes se usaba la de Londres y de noche contaba como el día siguiente)
+function fechaLocal(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
 function getMesActual() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
@@ -3787,8 +3835,10 @@ function renderDashboard() {
   const gastos   = getGastosTotales();
   const ventas   = mes.reduce((s,e) => s + e.precioTot, 0);
   const costos   = mes.reduce((s,e) => s + e.costoTot,  0);
-  const ganancia = mes.reduce((s,e) => s + e.ganancia,  0);
-  const neta     = ganancia - gastos;
+  const gastEv   = mes.reduce((s,e) => s + (+e.gastosEv || 0), 0);
+  const ganNeta  = mes.reduce((s,e) => s + e.ganancia,  0);
+  const ganancia = ganNeta + gastEv;            // ventas − insumos
+  const neta     = ganNeta - gastos;            // − sueldos/gasolina del evento − gastos fijos
   const eventos  = mes.length;
   const metaMonto = NEG.meta.monto || 0;
 
@@ -3805,15 +3855,15 @@ function renderDashboard() {
     <div class="neg-card green">
       <div class="neg-card-val">${mxn(ganancia)}</div>
       <div class="neg-card-lbl">Ganancia bruta</div>
-      <div class="neg-card-sub">Antes de gastos fijos</div>
+      <div class="neg-card-sub">Ventas − insumos</div>
     </div>
     <div class="neg-card ${neta >= 0 ? 'green' : 'red'}">
       <div class="neg-card-val">${mxn(neta)}</div>
       <div class="neg-card-lbl">Utilidad neta</div>
-      <div class="neg-card-sub">Gastos fijos: ${mxn(gastos)}</div>
+      <div class="neg-card-sub">${gastEv ? 'Gastos de eventos: ' + mxn(gastEv) + ' · ' : ''}Fijos: ${mxn(gastos)}${!gastEv && !gastos ? ' · agrégalos en 💸 Gastos' : ''}</div>
     </div>
     <div class="neg-card">
-      <div class="neg-card-val">${eventos > 0 ? Math.round(ganancia/eventos*100)/100 > 0 ? mxn(ganancia/eventos) : '$0' : '$0'}</div>
+      <div class="neg-card-val">${eventos > 0 ? mxn(ganNeta/eventos) : '$0'}</div>
       <div class="neg-card-lbl">Ganancia / evento</div>
       <div class="neg-card-sub">Promedio este mes</div>
     </div>
@@ -3928,9 +3978,11 @@ function renderRentabilidad() {
   const todos   = NEG.eventos;
   const gastos  = getGastosTotales();
   const ventas  = todos.reduce((s,e)=>s+e.precioTot,0);
-  const ganancia= todos.reduce((s,e)=>s+e.ganancia,0);
-  const costos  = todos.reduce((s,e)=>s+e.costoTot,0);
-  const neta    = ganancia - gastos;
+  const gastEv  = todos.reduce((s,e)=>s+(+e.gastosEv||0),0);
+  const ganNeta = todos.reduce((s,e)=>s+e.ganancia,0);
+  const ganancia= ganNeta + gastEv;
+  const costos  = todos.reduce((s,e)=>s+e.costoTot,0) - gastEv;
+  const neta    = ganNeta - gastos;
   const margenR = ventas > 0 ? Math.round((ganancia/ventas)*100) : 0;
 
   document.getElementById('rent-metrics').innerHTML = `
@@ -3949,7 +4001,7 @@ function renderRentabilidad() {
     <div class="neg-card ${neta>=0?'green':'red'}">
       <div class="neg-card-val">${mxn(neta)}</div>
       <div class="neg-card-lbl">Utilidad neta</div>
-      <div class="neg-card-sub">- ${mxn(gastos)} gastos fijos</div>
+      <div class="neg-card-sub">- ${mxn(gastEv)} gastos de eventos - ${mxn(gastos)} fijos</div>
     </div>
     <div class="neg-card">
       <div class="neg-card-val">${margenR}%</div>
